@@ -1,58 +1,46 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:rede_social/pages/cadastrar.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
+
+import 'package:flutter/material.dart';
+import 'package:rede_social/pages/login.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-import 'package:rede_social/pages/feed.dart';
-
-class Login extends StatefulWidget {
-  const Login({super.key});
+class Cadastrar extends StatefulWidget {
+  const Cadastrar({super.key});
 
   @override
-  State<Login> createState() => _LoginState();
+  State<Cadastrar> createState() => _CadastrarState();
 }
 
-class _LoginState extends State<Login> {
+class _CadastrarState extends State<Cadastrar> {
   final _emailController = TextEditingController();
   final _senhaController = TextEditingController();
 
-  _loginFirebase() async {
+  _cadastrarFirebase() async {
     final response = await http.post(
-      Uri.parse("https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${dotenv.env['FIREBASE_TOKEN']}"),
-      body: jsonEncode(
-        {
-          'email': _emailController.text,
-          'password': _senhaController.text,
-          'returnSecureToken': true,
-        },
-      ),
+      Uri.parse("https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${dotenv.env['FIREBASE_TOKEN']}"),
+      body: jsonEncode({
+        'email': _emailController.text,
+        'password': _senhaController.text,
+        'returnSecureToken': true,
+      }),
     );
 
     Map responseData = jsonDecode(response.body);
 
     if (responseData['error'] == null) {
-      Box box = await Hive.openBox('usuarios');
-      box.put('idToken', responseData['idToken']);
-      box.put('email', responseData['email']);
-      box.put('refreshToken', responseData['refreshToken']);
-      box.put('expiresIn', responseData['expiresIn']);
-      box.put('localId', responseData['localId']);
-      box.put('registered', responseData['registered']);
-
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Usuário loggado com sucesso'),
+          content: Text('Usuário criado com sucesso'),
         ),
       );
 
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => const Feed(),
+          builder: (context) => const Login(),
         ),
       );
     } else {
@@ -70,7 +58,7 @@ class _LoginState extends State<Login> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text('LOGIN'),
+          const Text('CADASTRAR'),
           TextFormField(
             controller: _emailController,
             decoration: const InputDecoration(
@@ -83,19 +71,19 @@ class _LoginState extends State<Login> {
             obscureText: true,
           ),
           ElevatedButton(
-            onPressed: _loginFirebase,
-            child: const Text('FAZER LOGIN'),
+            onPressed: _cadastrarFirebase,
+            child: const Text('CADASTRAR'),
           ),
           ElevatedButton(
             onPressed: () {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const Cadastrar(),
+                  builder: (context) => const Login(),
                 ),
               );
             },
-            child: const Text('CADASTRAR'),
+            child: const Text('FAZER LOGIN'),
           ),
         ],
       ),

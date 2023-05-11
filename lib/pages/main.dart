@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:rede_social/pages/verificar_login.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
   await Hive.initFlutter();
-  await dotenv.load(fileName: ".env");
+
   runApp(const MainApp());
 }
 
@@ -14,11 +13,8 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: GestureDetector(
-        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-        child: const VerificarLogin()
-      )
+    return const MaterialApp(
+      home: VerificarLogin(),
     );
   }
 }
