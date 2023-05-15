@@ -4,7 +4,7 @@ import 'package:rede_social/pages/verificar_login.dart';
 
 void main() async {
   await Hive.initFlutter();
-
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MainApp());
 }
 
