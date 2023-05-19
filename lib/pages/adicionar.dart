@@ -7,6 +7,9 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:uuid/uuid.dart';
 
 class Adicionar extends StatefulWidget {
   const Adicionar({super.key});
@@ -17,10 +20,10 @@ class Adicionar extends StatefulWidget {
 
 class _AdicionarState extends State<Adicionar> {
   final tituloController = TextEditingController();
-  final fotoController = TextEditingController();
   Position? localizacao;
   CameraController? cameraController;
   late List<CameraDescription> _cameras;
+  XFile? _imagem;
 
   Future<void> _determinePosition() async {
     bool serviceEnabled;
@@ -79,31 +82,35 @@ class _AdicionarState extends State<Adicionar> {
             controller: tituloController,
             decoration: const InputDecoration(label: Text('Título')),
           ),
-          TextFormField(
-            controller: fotoController,
-            decoration: const InputDecoration(label: Text('Foto')),
-          ),
           SizedBox(
             height: 300,
             width: double.infinity,
             child: CameraPreview(cameraController!)
             ),
           ElevatedButton(onPressed: () async {
-            final file = await cameraController!.takePicture();
-            file.saveTo('/storage/emulated/0/Android/data/');
-            print(file.path);
+            _imagem = await cameraController!.takePicture();
+            final permissaoFotos = await Permission.photos.request();
+            final permissaoExternal = await Permission.manageExternalStorage.request();
+            final imageBytes = await _imagem!.readAsBytes();
+            await ImageGallerySaver.saveImage(imageBytes);
           }, child: const Text('Tirar Foto')),
           ElevatedButton(
               onPressed: localizacao != null
                   ? () async {
                       Box box = await Hive.openBox('usuarios');
+                      final Uuid uuid = Uuid();
+
+                      final responseImagem = await http.post(
+                        Uri.parse("${dotenv.env['HOST_STORAGE']}${uuid.v4()}.jpg"),
+                        body: await _imagem!.readAsBytes()
+                      );
 
                       final response = await http.post(
                         Uri.parse("${dotenv.env['HOST_API']}/posts.json"),
                         body: jsonEncode({
                           'title': tituloController.text,
                           'user_id': box.get('localId'),
-                          'photo': fotoController.text,
+                          'photo': '',
                           'user_email': box.get('email'),
                           'lat': localizacao!.latitude.toString(),
                           'lng': localizacao!.longitude.toString(),
