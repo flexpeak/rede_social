@@ -105,12 +105,14 @@ class _AdicionarState extends State<Adicionar> {
                         body: await _imagem!.readAsBytes()
                       );
 
+                      final resDataImg = jsonDecode(responseImagem.body);
+
                       final response = await http.post(
                         Uri.parse("${dotenv.env['HOST_API']}/posts.json"),
                         body: jsonEncode({
                           'title': tituloController.text,
                           'user_id': box.get('localId'),
-                          'photo': '',
+                          'photo': '${dotenv.env['HOST_STORAGE']}${resDataImg['name']}?alt=media&token=${resDataImg['downloadTokens']}',
                           'user_email': box.get('email'),
                           'lat': localizacao!.latitude.toString(),
                           'lng': localizacao!.longitude.toString(),
