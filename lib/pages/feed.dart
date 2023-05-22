@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:rede_social/pages/adicionar.dart';
 import 'package:rede_social/pages/configuracoes.dart';
 import 'package:rede_social/pages/home.dart';
@@ -35,11 +36,21 @@ class _FeedState extends State<Feed> with TickerProviderStateMixin {
               _currentIndex = index;
             });
           },
+          selectedLabelStyle: const TextStyle(
+            fontFamily: 'ReemKufiFun',
+            fontSize: 10
+          ),
+          unselectedLabelStyle: const TextStyle(
+            fontFamily: 'ReemKufiFun',
+            fontSize: 10
+          ),
+          selectedItemColor: Colors.black87,
+          showUnselectedLabels: false,
           currentIndex: _currentIndex,
           items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-            BottomNavigationBarItem(icon: Icon(Icons.add), label: 'Adicionar'),
-            BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Configurações'),
+            BottomNavigationBarItem(icon: Icon(TablerIcons.home_2, color: Colors.black54), label: 'HOME'),
+            BottomNavigationBarItem(icon: Icon(TablerIcons.photo, color: Colors.black54), label: 'ADICIONAR'),
+            BottomNavigationBarItem(icon: Icon(TablerIcons.settings, color: Colors.black54), label: 'CONFIGURAÇÕES'),
           ],
         ),
       ),

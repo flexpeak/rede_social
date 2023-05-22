@@ -10,19 +10,35 @@ class Configuracoes extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: ElevatedButton(
-        onPressed: () async {
-          Box box = await Hive.openBox('usuarios');
-          box.clear();
-
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const Login(),
+      child: SizedBox(
+        width: 200,
+        child: ElevatedButton(
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all(
+              const Color(0xFFEEF350),
             ),
-          );
-        },
-        child: const Text('Fazer Logout'),
+            elevation: MaterialStateProperty.all(0),
+            shape: MaterialStateProperty.all(
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          ),
+          onPressed: () async {
+            Box box = await Hive.openBox('usuarios');
+            box.clear();
+      
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const Login(),
+              ),
+            );
+          },
+          child: const Text('FAZER LOGOUT', style: TextStyle(
+            color: Colors.black87,
+          ),),
+        ),
       ),
     );
   }
