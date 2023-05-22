@@ -1,30 +1,28 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:rede_social/pages/registrar.dart';
+import 'package:rede_social/pages/login.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-import 'package:rede_social/pages/feed.dart';
-
-class Login extends StatefulWidget {
-  const Login({super.key});
+class Registrar extends StatefulWidget {
+  const Registrar({super.key});
 
   @override
-  State<Login> createState() => _LoginState();
+  State<Registrar> createState() => _RegistrarState();
 }
 
-class _LoginState extends State<Login> {
+class _RegistrarState extends State<Registrar> {
   final _emailController = TextEditingController();
   final _senhaController = TextEditingController();
   final _form = GlobalKey<FormState>();
   bool isLoading = false;
 
-  _loginFirebase() async {
+  _cadastrarFirebase() async {
     if (!_form.currentState!.validate()) {
       return;
     }
@@ -34,14 +32,12 @@ class _LoginState extends State<Login> {
     });
 
     final response = await http.post(
-      Uri.parse("https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${dotenv.env['FIREBASE_TOKEN']}"),
-      body: jsonEncode(
-        {
-          'email': _emailController.text,
-          'password': _senhaController.text,
-          'returnSecureToken': true,
-        },
-      ),
+      Uri.parse("https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${dotenv.env['FIREBASE_TOKEN']}"),
+      body: jsonEncode({
+        'email': _emailController.text,
+        'password': _senhaController.text,
+        'returnSecureToken': true,
+      }),
     );
 
     setState(() {
@@ -51,24 +47,16 @@ class _LoginState extends State<Login> {
     Map responseData = jsonDecode(response.body);
 
     if (responseData['error'] == null) {
-      Box box = await Hive.openBox('usuarios');
-      box.put('idToken', responseData['idToken']);
-      box.put('email', responseData['email']);
-      box.put('refreshToken', responseData['refreshToken']);
-      box.put('expiresIn', responseData['expiresIn']);
-      box.put('localId', responseData['localId']);
-      box.put('registered', responseData['registered']);
-
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Usuário loggado com sucesso'),
+          content: Text('Usuário criado com sucesso'),
         ),
       );
 
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => const Feed(),
+          builder: (context) => const Login(),
         ),
       );
     } else {
@@ -95,7 +83,7 @@ class _LoginState extends State<Login> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SvgPicture.asset('assets/place.svg', width: 220),
+                    SvgPicture.asset('assets/add.svg', width: 220),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
                       child: Container(
@@ -110,7 +98,7 @@ class _LoginState extends State<Login> {
                           child: Column(
                             children: [
                               const Text(
-                                'LOGIN',
+                                'ME CADASTRAR',
                                 style: TextStyle(
                                   fontSize: 24,
                                   fontFamily: 'ReemKufiFun',
@@ -143,8 +131,8 @@ class _LoginState extends State<Login> {
                               TextFormField(
                                 controller: _senhaController,
                                 validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Campo obrigatório';
+                                  if (value == null || value.isEmpty || value.length < 6) {
+                                    return 'Campo inválido';
                                   }
                                   return null;
                                 },
@@ -167,7 +155,7 @@ class _LoginState extends State<Login> {
                                 width: double.infinity,
                                 height: 43,
                                 child: ElevatedButton(
-                                  onPressed: isLoading ? null : _loginFirebase,
+                                  onPressed: isLoading ? null : _cadastrarFirebase,
                                   style: ButtonStyle(
                                     backgroundColor: MaterialStateProperty.all(
                                       const Color(0xFFEEF350),
@@ -181,15 +169,15 @@ class _LoginState extends State<Login> {
                                   ),
                                   child: isLoading
                                       ? const SizedBox(
-                                        height: 15,
-                                        width: 15,
-                                        child: CircularProgressIndicator(
+                                          height: 15,
+                                          width: 15,
+                                          child: CircularProgressIndicator(
                                             color: Colors.black87,
                                             strokeWidth: 2,
                                           ),
-                                      )
+                                        )
                                       : const Text(
-                                          'FAZER LOGIN',
+                                          'FAZER CADASTRO',
                                           style: TextStyle(
                                             fontFamily: 'ReemKufiFun',
                                             color: Colors.black87,
@@ -214,12 +202,12 @@ class _LoginState extends State<Login> {
                                   Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => const Registrar(),
+                                      builder: (context) => const Login(),
                                     ),
                                   );
                                 },
                                 child: const Text(
-                                  'ME CADASTRAR',
+                                  'VOLTAR PARA LOGIN',
                                   style: TextStyle(
                                     fontFamily: 'ReemKufiFun',
                                     color: Colors.black87,
@@ -234,7 +222,7 @@ class _LoginState extends State<Login> {
                   ],
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),

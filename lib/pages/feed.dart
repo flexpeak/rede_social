@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rede_social/pages/adicionar.dart';
+import 'package:rede_social/pages/configuracoes.dart';
 import 'package:rede_social/pages/home.dart';
 
 class Feed extends StatefulWidget {
@@ -25,7 +26,7 @@ class _FeedState extends State<Feed> with TickerProviderStateMixin {
           children: const [
             Home(),
             Adicionar(),
-            Text('Configurações'),
+            Configuracoes(),
           ],
         ),
         bottomNavigationBar: BottomNavigationBar(

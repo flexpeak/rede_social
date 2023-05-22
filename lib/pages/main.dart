@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:rede_social/pages/verificar_login.dart';
+import 'package:rede_social/services/verificar_login.dart';
 
 void main() async {
   await Hive.initFlutter();
@@ -14,6 +14,7 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
+      title: 'Rede Social',
       home: VerificarLogin(),
     );
   }

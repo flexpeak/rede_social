@@ -11,6 +11,8 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_dotenv: ^5.0.2
+  flutter_svg: ^2.0.5
+  flutter_tabler_icons: ^1.1.2
   geolocator: ^9.0.2
   google_maps_flutter: ^2.2.6
   hive: ^2.2.3
@@ -29,3 +31,14 @@ flutter:
   uses-material-design: true
   assets:
     - .env
+    - assets/
+  fonts:
+    - family: ReemKufiFun
+      fonts: 
+        - asset: assets/fonts/ReemKufiFun-Regular.ttf
+        - asset: assets/fonts/ReemKufiFun-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/ReemKufiFun-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/ReemKufiFun-SemiBold.ttf
+          weight: 600

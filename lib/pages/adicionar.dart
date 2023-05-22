@@ -47,7 +47,9 @@ class _AdicionarState extends State<Adicionar> {
     }
 
     localizacao = await Geolocator.getCurrentPosition();
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   @override
@@ -82,28 +84,23 @@ class _AdicionarState extends State<Adicionar> {
             controller: tituloController,
             decoration: const InputDecoration(label: Text('Título')),
           ),
-          SizedBox(
-            height: 300,
-            width: double.infinity,
-            child: CameraPreview(cameraController!)
-            ),
-          ElevatedButton(onPressed: () async {
-            _imagem = await cameraController!.takePicture();
-            final permissaoFotos = await Permission.photos.request();
-            final permissaoExternal = await Permission.manageExternalStorage.request();
-            final imageBytes = await _imagem!.readAsBytes();
-            await ImageGallerySaver.saveImage(imageBytes);
-          }, child: const Text('Tirar Foto')),
+          SizedBox(height: 300, width: double.infinity, child: CameraPreview(cameraController!)),
+          ElevatedButton(
+              onPressed: () async {
+                _imagem = await cameraController!.takePicture();
+                await Permission.photos.request();
+                await Permission.manageExternalStorage.request();
+                final imageBytes = await _imagem!.readAsBytes();
+                await ImageGallerySaver.saveImage(imageBytes);
+              },
+              child: const Text('Tirar Foto')),
           ElevatedButton(
               onPressed: localizacao != null
                   ? () async {
                       Box box = await Hive.openBox('usuarios');
                       final Uuid uuid = Uuid();
 
-                      final responseImagem = await http.post(
-                        Uri.parse("${dotenv.env['HOST_STORAGE']}${uuid.v4()}.jpg"),
-                        body: await _imagem!.readAsBytes()
-                      );
+                      final responseImagem = await http.post(Uri.parse("${dotenv.env['HOST_STORAGE']}${uuid.v4()}.jpg"), body: await _imagem!.readAsBytes());
 
                       final resDataImg = jsonDecode(responseImagem.body);
 
